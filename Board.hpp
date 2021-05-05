@@ -8,7 +8,7 @@ namespace pandemic
 {
     class Board
     {
-        int x; // לוח מפה של העולם ובו 48 ערים
+        int n_1; // לוח מפה של העולם ובו 48 ערים
       
       
         public:
