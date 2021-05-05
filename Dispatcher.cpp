@@ -1,7 +1,7 @@
 #include "Dispatcher.hpp"
 
 namespace pandemic{
-    Dispatcher::Dispatcher(Board board,City c)
+    Dispatcher::Dispatcher(Board board,City city)
     {
 
     }
