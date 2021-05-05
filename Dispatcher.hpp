@@ -1,5 +1,3 @@
-#pragma once
-#include <iostream>
 #include "Player.hpp"
 
 namespace pandemic
