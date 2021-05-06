@@ -115,25 +115,102 @@ TEST_CASE("check Researcher player") // can perform a "drug discovery" operation
     CHECK_THROWS(player.discover_cure(Color::Red));
     CHECK_THROWS(player.discover_cure(Color::Black));
     CHECK_THROWS(player.discover_cure(Color::Yellow));
+    player.take_card(City::Mumbai); 
+    player.discover_cure(Color::Blue); // can perform a "drug discovery" operation in any city
+    CHECK_THROWS(player.treat(City::Paris));   
+    CHECK_THROWS(player.treat(City::HongKong)); 
 
-    player.take_card(City::Montreal);
-    player.discover_cure(Color::Blue);
-    CHECK_THROWS(player.treat(City::Miami));    
+}
+
+
+// ------------------------------- Medic ---------------------------------------------------
+TEST_CASE("check Medic player") // when he performs a "disease treatment" operation, he removes all the disease cubes from the city he is in, and not just one.
+{
+    Board board;
+    Medic player{board,City::Paris};
+    CHECK_THROWS(player.drive(City::Cairo));
+    CHECK_THROWS(player.drive(City::Istanbul));
+    CHECK_THROWS(player.drive(City::Mumbai));	
+    CHECK_THROWS(player.fly_direct(City::Madrid)); // has not card of madrid
+    CHECK_THROWS(player.fly_direct(City::HongKong)); // has not card of HongKong
+    CHECK_THROWS(player.fly_charter(City::Milan)); // has not card of paris
+    CHECK_THROWS(player.fly_shuttle(City::Istanbul)); // there is no research station from Istanbul and paris
+    CHECK_THROWS(player.build()); // has not card of paris
+    player.take_card(City::Paris);
+    player.build(); // now we can build
+    CHECK_THROWS(player.fly_shuttle(City::NewYork)); // discarded the paris card during the build
+    board[City::Paris]=2;
+    player.treat(City::Miami);
+    CHECK_THROWS(player.treat(City::Miami));
+
 }
 
 
 
+// ------------------------------- Virologist -------------------------------------------
+TEST_CASE("check Virologist player") // Can perform a "disease treatment" operation, not only in the city in which it is located, but in any city in the world - by throwing a card of that city.
+{
+    Board board;
+    Virologist player{board,City::Paris};
+    CHECK_THROWS(player.drive(City::Cairo));
+    CHECK_THROWS(player.drive(City::Istanbul));
+    CHECK_THROWS(player.drive(City::Mumbai));	
+    CHECK_THROWS(player.fly_direct(City::Madrid)); // has not card of madrid
+    CHECK_THROWS(player.fly_direct(City::HongKong)); // has not card of HongKong
+    CHECK_THROWS(player.fly_charter(City::Milan)); // has not card of paris
+    CHECK_THROWS(player.fly_shuttle(City::Istanbul));
+    CHECK_THROWS(player.treat(City::Milan));
+    board[City::Paris]=2;
+    player.take_card(City::Paris);
+    player.fly_charter(City::NewYork);
+    player.treat(City::Paris);
+    CHECK_THROWS(player.treat(City::Paris));
+    CHECK_THROWS(player.build());
+    
+}
 
 
 
+// --------------------------------------- GeneSplicer --------------------------------------
+TEST_CASE("check GeneSplicer player") // can perform a "drug discovery" operation with the help of 5 cards - not necessarily from the color of the disease.
+{
+    Board board;
+    GeneSplicer player{board,City::Paris};
+    CHECK_THROWS(player.drive(City::Cairo));
+    CHECK_THROWS(player.drive(City::Istanbul));
+    CHECK_THROWS(player.drive(City::Mumbai));	
+    CHECK_THROWS(player.fly_direct(City::Madrid)); // has not card of madrid
+    CHECK_THROWS(player.fly_direct(City::HongKong)); // has not card of HongKong
+    CHECK_THROWS(player.fly_charter(City::Milan)); // has not card of paris
+    CHECK_THROWS(player.fly_shuttle(City::Istanbul));
+    CHECK_THROWS(player.treat(City::Milan));
+    player.take_card(City::Delhi);
+    player.take_card(City::Paris);
+    player.take_card(City::Mumbai);
+    player.take_card(City::Madrid);
+    player.take_card(City::Miami);
+    player.discover_cure(Color::Red); // have 5 cards
+    CHECK_THROWS(player.discover_cure(Color::Red));
+    CHECK_THROWS(player.build());
+}
 
 
-
-
-
-
-
-
-
-
+// -------------------------------------- FieldDoctor ----------------------------------------------
+TEST_CASE("check FieldDoctor player") // can perform a "disease treatment" operation not only in the city he is in but in any city near the city he is in, without throwing a city card. 
+{
+    Board board;
+    FieldDoctor player{board,City::Paris};
+    CHECK_THROWS(player.drive(City::Cairo));
+    CHECK_THROWS(player.drive(City::Istanbul));
+    CHECK_THROWS(player.drive(City::Mumbai));	
+    CHECK_THROWS(player.fly_direct(City::Madrid)); // has not card of madrid
+    CHECK_THROWS(player.fly_direct(City::HongKong)); // has not card of HongKong
+    CHECK_THROWS(player.fly_charter(City::Milan)); // has not card of paris
+    CHECK_THROWS(player.fly_shuttle(City::Istanbul));
+    CHECK_THROWS(player.treat(City::Milan));
+    board[City::Paris]=1;
+    player.treat(City::Paris);
+    CHECK_THROWS(player.treat(City::Paris));
+    CHECK_THROWS(player.build());
+}
 
